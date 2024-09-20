@@ -1,0 +1,137 @@
+﻿<div style="max-width:600px; padding:24px; margin:auto; display:flex; flex-direction:column; gap:12px;">
+    <IgbDataChart Width="100%"
+                  Height="260px"
+                  @ref="_dataChart">
+        <IgbCategoryYAxis Name="yAxis"
+                          Overlap="@_overlap"
+                          DataSource="_data"
+                          Label="@(nameof(SampleData.Category))">
+        </IgbCategoryYAxis>
+        <IgbNumericXAxis Name="xAxis">
+        </IgbNumericXAxis>
+
+        @foreach (var series in _seriesData)
+        {
+            <IgbStackedBarSeries Title="@series.Title"
+                                 DataSource="_data"
+                                 XAxisName="xAxis"
+                                 YAxisName="yAxis">
+                @foreach (var fragment in series.Fragments)
+                {
+                    <IgbStackedFragmentSeries Name="@fragment.Name"
+                                              ValueMemberPath="@fragment.ValueMemberPath">
+                    </IgbStackedFragmentSeries>
+                }
+            </IgbStackedBarSeries>
+        }
+    </IgbDataChart>
+    <div style="display:flex; gap:12px; margin-top:12px; align-items:center;">
+        <IgbButton @onclick="IncreaseOverlap">＋</IgbButton>
+        <IgbButton @onclick="DecreaseOverlap">－</IgbButton>
+        <p style="margin: 0;">Overlap: @_overlap.ToString("F1")</p>
+    </div>
+
+
+</div>
+
+@code {
+    private IgbDataChart? _dataChart;
+    private IgbLegend? _legend;
+    private double _overlap = -0.1;
+
+    public class SampleData
+    {
+        public int Product1 { get; set; }
+        public int Product2 { get; set; }
+        public int Product3 { get; set; }
+        public int Product4 { get; set; }
+        public int Product11 { get; set; }
+        public int Product12 { get; set; }
+        public int Product13 { get; set; }
+        public int Product14 { get; set; }
+        public int Product21 { get; set; }
+        public int Product22 { get; set; }
+        public int Product23 { get; set; }
+        public int Product24 { get; set; }
+        public string? Category { get; set; }
+    }
+
+    public class SeriesData
+    {
+        public string? Title { get; set; }
+        public List<FragmentData> Fragments { get; set; } = new();
+    }
+
+    public class FragmentData
+    {
+        public string? Name { get; set; }
+        public string? ValueMemberPath { get; set; }
+    }
+
+    private List<SampleData> _data = new()  {
+        new() { Category = "A", Product1 = 9, Product2 = 4, Product3 = 9, Product4 = 2, Product11 = 7, Product12 = 5, Product13 = 5, Product14 = 4, Product21 = 7, Product22 = 2, Product23 = 3, Product24 = 4 },
+        new() { Category = "B", Product1 = 7, Product2 = 4, Product3 = 5, Product4 = 4, Product11 = 7, Product12 = 3, Product13 = 5, Product14 = 4, Product21 = 5, Product22 = 3, Product23 = 4, Product24 = 6 },
+        new() { Category = "C", Product1 = 5, Product2 = 4, Product3 = 3, Product4 = 3, Product11 = 7, Product12 = 4, Product13 = 5, Product14 = 4, Product21 = 3, Product22 = 4, Product23 = 5, Product24 = 8 },
+    };
+
+    private List<SeriesData> _seriesData = new()
+    {
+        new()
+        {
+            Title = "Sample1",
+            Fragments = new List<FragmentData>
+            {
+                new FragmentData { Name = "product1", ValueMemberPath = "Product1" },
+                new FragmentData { Name = "product2", ValueMemberPath = "Product2" },
+                new FragmentData { Name = "product3", ValueMemberPath = "Product3" },
+                new FragmentData { Name = "product4", ValueMemberPath = "Product4" }
+            }
+        },
+        new()
+        {
+            Title = "Sample2",
+            Fragments = new List<FragmentData>
+            {
+                new FragmentData { Name = "product11", ValueMemberPath = "Product11" },
+                new FragmentData { Name = "product12", ValueMemberPath = "Product12" },
+                new FragmentData { Name = "product13", ValueMemberPath = "Product13" },
+                new FragmentData { Name = "product14", ValueMemberPath = "Product14" }
+            }
+        },
+        new()
+        {
+            Title = "Sample3",
+            Fragments = new List<FragmentData>
+            {
+                new FragmentData { Name = "product21", ValueMemberPath = "Product21" },
+                new FragmentData { Name = "product22", ValueMemberPath = "Product22" },
+                new FragmentData { Name = "product23", ValueMemberPath = "Product23" },
+                new FragmentData { Name = "product24", ValueMemberPath = "Product24" }
+            }
+        },
+    };
+    private void IncreaseOverlap()
+    {
+        if (_overlap < 1)
+        {
+            _overlap += 0.1;
+            StateHasChanged();
+        }
+    }
+
+    private void DecreaseOverlap()
+    {
+        if (_overlap > -1)
+        {
+            _overlap -= 0.1;
+            StateHasChanged();
+        }
+    }
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            StateHasChanged();
+        }
+    }
+}
